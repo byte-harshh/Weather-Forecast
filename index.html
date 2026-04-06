@@ -1,61 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="icon" type="image/png" href="favicon.png">    
+
+<link rel="icon" type="image/png" href="favicon.png">
+
 <meta charset="UTF-8">
 <title>Weather App | Harsh Jagtap</title>
 
 <style>
 
 body{
-    font-family: Arial, sans-serif;
-    background: linear-gradient(to right,#4facfe,#00f2fe);
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+font-family: Arial, sans-serif;
+background: linear-gradient(to right,#4facfe,#00f2fe);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
 }
 
 .container{
-    background:white;
-    padding:30px;
-    border-radius:10px;
-    width:320px;
-    text-align:center;
-    box-shadow:0 0 15px rgba(0,0,0,0.2);
+background:white;
+padding:30px;
+border-radius:10px;
+width:320px;
+text-align:center;
+box-shadow:0 0 15px rgba(0,0,0,0.2);
 }
 
 h1{
-    margin-bottom:20px;
+margin-bottom:20px;
 }
 
 input{
-    padding:10px;
-    width:80%;
-    border-radius:5px;
-    border:1px solid #ccc;
+padding:10px;
+width:80%;
+border-radius:5px;
+border:1px solid #ccc;
 }
 
 button{
-    margin-top:10px;
-    padding:10px 20px;
-    border:none;
-    background:#4facfe;
-    color:white;
-    border-radius:5px;
-    cursor:pointer;
+margin-top:10px;
+padding:10px 20px;
+border:none;
+background:#4facfe;
+color:white;
+border-radius:5px;
+cursor:pointer;
 }
 
 button:hover{
-    background:#008cff;
+background:#008cff;
+}
+
+button:disabled{
+background:#999;
+cursor:not-allowed;
 }
 
 #result{
-    margin-top:20px;
+margin-top:20px;
 }
 
 #icon{
-    width:80px;
+width:80px;
 }
 
 </style>
@@ -69,9 +76,10 @@ button:hover{
 <h1>Weather App</h1>
 
 <input type="text" id="cityInput" placeholder="Enter city name">
+
 <br>
 
-<button onclick="getWeather()">Check Weather</button>
+<button id="weatherBtn" onclick="getWeather()">Check Weather</button>
 
 <p id="loading"></p>
 
@@ -90,6 +98,7 @@ button:hover{
 </div>
 
 <script src="config.js"></script>
+
 <script>
 
 const apiKey = API_KEY;
@@ -103,15 +112,29 @@ alert("Please enter city name");
 return;
 }
 
+let button = document.getElementById("weatherBtn");
+button.disabled = true;
+
+document.getElementById("city").innerText = "";
+document.getElementById("temperature").innerText = "";
+document.getElementById("condition").innerText = "";
+document.getElementById("icon").src = "";
+
 document.getElementById("loading").innerText = "Loading...";
 
-let url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
+let url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
 
 try{
 
 let response = await fetch(url);
-
 let data = await response.json();
+
+if(data.error){
+alert("City not found");
+document.getElementById("loading").innerText = "";
+button.disabled = false;
+return;
+}
 
 document.getElementById("loading").innerText = "";
 
@@ -131,13 +154,13 @@ document.getElementById("icon").src =
 catch(error){
 
 document.getElementById("loading").innerText = "";
-
-alert("City not found");
-
-}
+alert("Error fetching weather");
 
 }
 
+button.disabled = false;
+
+}
 
 document.getElementById("cityInput")
 .addEventListener("keypress", function(event){
