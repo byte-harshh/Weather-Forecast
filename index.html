@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Weather App</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right,#4facfe,#00f2fe);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    width:320px;
+    text-align:center;
+    box-shadow:0 0 15px rgba(0,0,0,0.2);
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+input{
+    padding:10px;
+    width:80%;
+    border-radius:5px;
+    border:1px solid #ccc;
+}
+
+button{
+    margin-top:10px;
+    padding:10px 20px;
+    border:none;
+    background:#4facfe;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#008cff;
+}
+
+#result{
+    margin-top:20px;
+}
+
+#icon{
+    width:80px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Weather App</h1>
+
+<input type="text" id="cityInput" placeholder="Enter city name">
+<br>
+
+<button onclick="getWeather()">Check Weather</button>
+
+<p id="loading"></p>
+
+<div id="result">
+
+<h2 id="city"></h2>
+
+<img id="icon">
+
+<p id="temperature"></p>
+
+<p id="condition"></p>
+
+</div>
+
+</div>
+
+<script src="config.js"></script>
+<script>
+
+const apiKey = API_KEY;
+
+async function getWeather(){
+
+let city = document.getElementById("cityInput").value;
+
+if(city === ""){
+alert("Please enter city name");
+return;
+}
+
+document.getElementById("loading").innerText = "Loading...";
+
+let url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
+
+try{
+
+let response = await fetch(url);
+
+let data = await response.json();
+
+document.getElementById("loading").innerText = "";
+
+document.getElementById("city").innerText =
+data.location.name + ", " + data.location.country;
+
+document.getElementById("temperature").innerText =
+"Temperature : " + data.current.temp_c + " °C";
+
+document.getElementById("condition").innerText =
+"Weather : " + data.current.condition.text;
+
+document.getElementById("icon").src =
+"https:" + data.current.condition.icon;
+
+}
+catch(error){
+
+document.getElementById("loading").innerText = "";
+
+alert("City not found");
+
+}
+
+}
+
+
+document.getElementById("cityInput")
+.addEventListener("keypress", function(event){
+
+if(event.key === "Enter"){
+getWeather();
+}
+
+});
+
+</script>
+
+</body>
+</html>
